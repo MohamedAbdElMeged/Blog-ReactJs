@@ -25,13 +25,21 @@ export class App extends Component {
     .then(res => this.setState({ posts: [...this.state.posts , res.data] }));
   };
 
+  deletePost = (id) => {
+    Axios.delete(`http://localhost:3000/api/v1/posts/${id}`,{
+      method: 'DELETE'
+    }).then(res => { this.setState({posts: [...this.state.posts.filter(post => post.id !== id)]} ) })
+  }
+
+  
+
   render() {
     return (
       <div>
         <NavBar />
-        <AddPost AddNewPost= {this.AddNewPost}/>
+        <AddPost AddNewPost= {this.AddNewPost} />
         <br/>
-        <Posts posts={this.state.posts}/>
+        <Posts posts={this.state.posts} deletePost={this.deletePost}/>
   </div>
     )
   }

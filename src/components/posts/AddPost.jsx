@@ -43,7 +43,7 @@ export class AddPost extends Component {
                         autoComplete="off" value ={this.state.title} onChange={this.changeTitle}/>
                     </div>
                     <div className="form-group">
-                        <input type="text"
+                        <textarea type="text"
                         className="form-control" name="body" 
                         placeholder="add body" value ={this.state.body} onChange={this.changeBody}/>
                     </div>
