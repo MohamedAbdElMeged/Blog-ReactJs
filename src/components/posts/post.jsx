@@ -2,8 +2,14 @@ import React, { Component } from 'react'
 
 export class post extends Component {
 
+    formateDate = () => {
+        let date = new Date(this.props.post.created_at).toLocaleDateString();
+        let time = new Date(this.props.post.created_at).toLocaleTimeString();
+        return date + " " + time ;
+    };
 
     render() {
+         //new Date(( - ).toLocaleDateString()).getHours();
         return (
             <React.Fragment>
                 <div className="card">
@@ -12,9 +18,10 @@ export class post extends Component {
                         <h5 className="card-title">{this.props.post.title}</h5>
                         <p className="card-text">{this.props.post.body}</p>
                     </div>
-                    <div class="card-footer">
-                         <small class="text-muted">{new Date(this.props.post.created_at).toLocaleDateString()}
-                         {' '} {new Date(this.props.post.created_at).toLocaleTimeString()}</small>
+                    <div className="card-footer">
+                         <small className="text-muted">
+                         {this.formateDate()}
+                         </small>
                     </div>
                 </div>
                 <br/>
@@ -22,5 +29,7 @@ export class post extends Component {
         )
     }
 }
+
+// {this.formateDate}
 
 export default post
