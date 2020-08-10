@@ -10,13 +10,12 @@ export class comment extends Component {
 
 
     render() {
-        const {id , body } = this.props.comment;
+        const {body, user } = this.props.comment;
         return (
             <div>
                     <div className="card container">
-                    <p className="card-header">{id}
-                    {/* <button className="btn btn-link" onClick={() => this.props.deletePost(id)}>
-                        <FontAwesomeIcon icon={faRecycle}  size="sm" /></button> */}
+                    <p className="card-header">{user.first_name + " " + user.last_name + "     "}
+                    <small>commented</small>
                     </p>                 
                     <div className="card-body">
                         <p className="card-text">{body}</p>

@@ -37,11 +37,11 @@ export class post extends Component {
 
 
     render() {
-        const {id , title ,body} = this.props.post ;
+        const {id , title ,body , user} = this.props.post ;
         return (           
             <React.Fragment>
                 <div className="card">
-                    <p className="card-header">{title}
+                    <p className="card-header">{user.first_name + " " + user.last_name}
                     <button className="btn btn-link" onClick={() => this.props.deletePost(id)}>
                         <FontAwesomeIcon icon={faRecycle}  size="sm" /></button>
                     </p>                 
