@@ -35,15 +35,22 @@ export class post extends Component {
         }))
     }
 
+    checkDeleteButton = () => {
+        if (this.props.user !== null && this.props.user.id === this.props.post.user.id) {
+            return <button className="btn btn-link" onClick={() => this.props.deletePost(this.props.post.id)}>
+            <FontAwesomeIcon icon={faRecycle}  size="sm" /></button>;
+        }
+    }
 
     render() {
         const {id , title ,body , user} = this.props.post ;
-        return (           
+        //console.log(this.props.user , "vdds");
+        return (                 
             <React.Fragment>
                 <div className="card">
                     <p className="card-header">{user.first_name + " " + user.last_name}
-                    <button className="btn btn-link" onClick={() => this.props.deletePost(id)}>
-                        <FontAwesomeIcon icon={faRecycle}  size="sm" /></button>
+                    
+                        {this.checkDeleteButton()}
                     </p>                 
                     <div className="card-body">
                         <h5 className="card-title">{title}</h5>

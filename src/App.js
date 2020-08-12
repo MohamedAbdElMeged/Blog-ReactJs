@@ -8,8 +8,7 @@ import Axios from 'axios';
 import Cookies from 'universal-cookie';
 import Login from './components/authorization/login'
 import Register from './components/authorization/register'
-import About from './components/pages/about'
-import { Redirect } from 'react-router';
+import About from './components/pages/about';
 
 
 
@@ -45,17 +44,6 @@ export class App extends Component {
   //   } 
   // }
 
-  getUser = () => {
-    const cookies = new Cookies();
-    let token =cookies.get('access_token');
-    let user={}; 
-    Axios.get("http://localhost:3000/api/v1/current_user",{
-      headers: { Authorization: `Bearer ${token}` }
-    }).then(res => this.setState({user: res.data}));
-    console.log(user , "user Get User");
-    return user;
-  }
-
   logOut = () =>{
     const cookies = new Cookies();
     let token =cookies.get('access_token');
@@ -80,7 +68,12 @@ export class App extends Component {
    }).then(res => {
     cookies.set('access_token', res.data.access_token, { path: '/' }); localStorage.setItem('refresh_token', res.data.refresh_token);
     this.setState({user: res.data.user});
-   });
+   }).catch(
+    function (error) {
+      console.log('Show error notification!')
+      
+    }
+  );
 
 
   }
@@ -88,17 +81,24 @@ export class App extends Component {
   componentDidMount(){
     Axios.get("http://localhost:3000/api/v1/posts")
     .then(res => this.setState({posts: res.data}));
+    this.getUser();
+
+  }
+
+
+  getUser = () => {
     const cookies = new Cookies();
     let token =cookies.get('access_token');
     if (token !== undefined) {
-      Axios.get("http://localhost:3000/api/v1/current_user",{
-        headers: { Authorization: `Bearer ${token}` }
-      }).then(res => {
-        this.setState({user: res.data});
-        console.log(this.state.user , "user Get User");
-      });
-    }  
 
+    
+    Axios.get("http://localhost:3000/api/v1/current_user",{
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(res => {
+      this.setState({user: res.data});
+      //console.log(this.state.user , "user Get User");
+    });
+  } 
   }
 
   AddNewPost = (postObject) => {
@@ -138,7 +138,7 @@ export class App extends Component {
                 {this.formatAddNewPost()}
                 
                 <br/>
-                <Posts posts={this.state.posts} deletePost={this.deletePost}/>
+                <Posts posts={this.state.posts} deletePost={this.deletePost} user={this.state.user}/>
             </React.Fragment>
             )}/>
             <Route path="/login" component={() => <Login Login={this.Login} user={this.state.user}  />}/>

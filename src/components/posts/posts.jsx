@@ -6,7 +6,7 @@ export class posts extends Component {
         return (
             <div className="container">          
                 {this.props.posts.map(post =>
-                     <Post key={post.id} post={post} deletePost={this.props.deletePost}/>
+                     <Post key={post.id} post={post} deletePost={this.props.deletePost} user={this.props.user} />
                      )}
             </div>
         )
