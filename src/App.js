@@ -8,12 +8,16 @@ import Axios from 'axios';
 import Cookies from 'universal-cookie';
 import Login from './components/authorization/login'
 import Register from './components/authorization/register'
+import About from './components/pages/about'
+import { Redirect } from 'react-router';
+
 
 
 
 export class App extends Component {
   state ={
-    posts: []
+    posts: [],
+    user: null
   };
 
   // constructor(){
@@ -30,14 +34,70 @@ export class App extends Component {
   // }
 
 
-  loginUser = () => {
-    
+  // checkAuth = () =>{
+  //   const cookies = new Cookies();
+  //   let token =cookies.get('access_token');
+  //   if (token !== undefined) {
+  //     let user = this.getUser();
+  //     if (user !== undefined) {
+  //       this.setState({user: user});
+  //     }
+  //   } 
+  // }
+
+  getUser = () => {
+    const cookies = new Cookies();
+    let token =cookies.get('access_token');
+    let user={}; 
+    Axios.get("http://localhost:3000/api/v1/current_user",{
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(res => this.setState({user: res.data}));
+    console.log(user , "user Get User");
+    return user;
+  }
+
+  logOut = () =>{
+    const cookies = new Cookies();
+    let token =cookies.get('access_token');
+
+    Axios.delete("http://localhost:3000/api/v1/sessions",{
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(res => {
+      console.log(res.data)
+      this.setState({user: null});
+      cookies.remove("access_token");
+      localStorage.removeItem("refresh_token")
+    });
+  }
+
+
+  Login = (email , password) => {
+    console.log(email,password);
+   const cookies = new Cookies();
+   Axios.post("http://localhost:3000/api/v1/sessions",{
+     email: email,
+     password: password
+   }).then(res => {
+    cookies.set('access_token', res.data.access_token, { path: '/' }); localStorage.setItem('refresh_token', res.data.refresh_token);
+    this.setState({user: res.data.user});
+   });
+
+
   }
 
   componentDidMount(){
     Axios.get("http://localhost:3000/api/v1/posts")
     .then(res => this.setState({posts: res.data}));
-    
+    const cookies = new Cookies();
+    let token =cookies.get('access_token');
+    if (token !== undefined) {
+      Axios.get("http://localhost:3000/api/v1/current_user",{
+        headers: { Authorization: `Bearer ${token}` }
+      }).then(res => {
+        this.setState({user: res.data});
+        console.log(this.state.user , "user Get User");
+      });
+    }  
 
   }
 
@@ -62,22 +122,29 @@ export class App extends Component {
     }).then(res => { this.setState({posts: [...this.state.posts.filter(post => post.id !== id)]} ) })
   }
 
-  
+  formatAddNewPost = () => {
+    if (this.state.user !== null) {
+      return <AddPost AddNewPost= {this.AddNewPost} />
+    }
+  }
 
   render() {
     return (
       
       <Router>
-          <NavBar />  
+          <NavBar logOut={this.logOut} user={this.state.user} />  
             <Route exact path="/" render={props => (
               <React.Fragment>
-                <AddPost AddNewPost= {this.AddNewPost} />
+                {this.formatAddNewPost()}
+                
                 <br/>
                 <Posts posts={this.state.posts} deletePost={this.deletePost}/>
             </React.Fragment>
             )}/>
-            <Route path="/login" component={Login}/>
+            <Route path="/login" component={() => <Login Login={this.Login} user={this.state.user}  />}/>
             <Route path="/register" component={Register}/>
+            <Route path="/about" component={About}/>
+
 
     </Router>
     )

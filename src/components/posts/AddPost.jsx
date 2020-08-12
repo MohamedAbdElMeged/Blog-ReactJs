@@ -36,7 +36,7 @@ export class AddPost extends Component {
         return (
             <div className="container">
                 <h3>Add New Post</h3>
-                <form onSubmit={this.SubmitPost} >
+                <form onSubmit={this.SubmitPost} method="post" >
                     <div className="form-group">
                         <input type="text"
                         className="form-control" name="title" placeholder="add title"
