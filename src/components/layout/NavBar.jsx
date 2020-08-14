@@ -11,15 +11,12 @@ export class NavBar extends Component {
         if (this.props.user !== null) {
             return <React.Fragment>
                 <ul className="navbar-nav ml-auto">
-                <li className="nav-item">
-                    <button className="nav-link btn btn-link" >{this.props.user.first_name}</button>                               
+                <li className="nav-item">    
+                        <Link className="nav-link" to="/profile">{this.props.user.first_name}</Link>
                 </li>    
                 <li className="nav-item">
                     <button className="nav-link btn btn-link" onClick={this.props.logOut}>Logout</button>                               
                 </li>          
-                {/* <li className="nav-item">
-                    <Link className="nav-link" to="/login">Logout</Link>                               
-                </li>                        */}
                 </ul>
             </React.Fragment>
 
@@ -47,8 +44,12 @@ export class NavBar extends Component {
                 <Link className="nav-link" to="/about">About</Link>
 
                                 {this.checkLogged()}
+
+                
                 </nav>
+                
             </div>
+            
         )
     }
 }
