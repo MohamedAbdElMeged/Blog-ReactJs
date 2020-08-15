@@ -6,9 +6,23 @@ export class AddComment extends Component {
         body: ''
     }
 
+    constructor(props) {
+        super(props);
+    
+        this._isMounted = false;
+    // rest of your code
+    }
+
     changeBody = (e) =>{
         this.setState({ [e.target.name]: e.target.value})
     }
+
+    componentDidMount(){
+        this._isMounted = true;
+    }
+    componentWillUnmount() {
+        this._isMounted = false;
+     }
 
     submitComment = (e) => {
         let comment = {

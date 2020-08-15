@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faRecycle} from '@fortawesome/free-solid-svg-icons'
 import Comments from './../comments/comments';
+import Cookies from 'universal-cookie';
 import Axios from 'axios';
 import AddComment from './../comments/AddComment';
 
@@ -11,12 +12,13 @@ export class post extends Component {
         comments: []
     }
 
-    
-
-    componentDidMount(){
+    getComments = () => {
         Axios.get(`http://localhost:3000/api/v1/posts/${this.props.post.id}/comments`)
         .then(res => this.setState({comments: res.data }));
-        
+    }
+
+    componentDidMount(){
+        //setInterval(this.getComments, 5000);
     }
 
     formateDate = () => {
@@ -27,9 +29,13 @@ export class post extends Component {
 
 
     AddComment = (comment) =>{
+        const cookies = new Cookies();
+        let token =cookies.get('access_token');
         Axios.post(`http://localhost:3000/api/v1/posts/${comment.post_id}/comments`,{
             body: comment.body,
             post_id: comment.post_id
+        },{
+            headers: { Authorization: `Bearer ${token}` }
         }).then(res => this.setState({
             comments: [...this.state.comments,res.data]
         }))
@@ -42,8 +48,14 @@ export class post extends Component {
         }
     }
 
+    checkUserFromComment = () => {
+        if (this.props.user !== null) {
+            return  <AddComment postId={this.props.post.id} AddComment={this.AddComment} />
+        }
+    }
+
     render() {
-        const {id , title ,body , user} = this.props.post ;
+        const {title ,body , user} = this.props.post ;
         //console.log(this.props.user , "vdds");
         return (                 
             <React.Fragment>
@@ -63,7 +75,7 @@ export class post extends Component {
                     </div>                   
                 </div>    
                 <Comments comments={this.state.comments}   />  
-                <AddComment postId={id} AddComment={this.AddComment} />
+                {this.checkUserFromComment()}
                 <br/>
                 
             </React.Fragment>

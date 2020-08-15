@@ -6,10 +6,10 @@ import Posts from './components/posts/posts';
 import AddPost from './components/posts/AddPost';
 import Axios from 'axios';
 import Cookies from 'universal-cookie';
-import Login from './components/authorization/login'
-import Register from './components/authorization/register'
-import Profile from './components/authorization/profile'
-
+import Login from './components/authorization/login';
+import Register from './components/authorization/register';
+import Profile from './components/authorization/profile';
+import Flash from './components/flash/flash';
 import About from './components/pages/about';
 
 
@@ -18,7 +18,8 @@ import About from './components/pages/about';
 export class App extends Component {
   state ={
     posts: [],
-    user: null
+    user: null,
+    flashMessage: null
   };
   registerNewUser = (user) => {
     const cookies = new Cookies();
@@ -40,6 +41,13 @@ export class App extends Component {
         cookies.set('access_token', res.data.access_token, { path: '/' });
         localStorage.setItem('refresh_token', res.data.refresh_token);
         this.setState({user: res.data.user});
+        this.setState({
+          flashMessage: {
+            type: "success",
+            body : "Welcome " + res.data.user.first_name + "!"
+          }
+        });
+
       }).catch(
         function (error) {
           console.log('Show error notification!')
@@ -57,10 +65,22 @@ export class App extends Component {
     }).then(res => {
       this.setState({user: null});
       cookies.remove("access_token");
-      localStorage.removeItem("refresh_token")
+      localStorage.removeItem("refresh_token");
+      this.setState({
+        flashMessage: {
+          type: "success",
+          body : "Logged out successfully !"
+        }
+      });
+
     });
+    
   }
 
+
+  hideFlashMessage = () =>{
+    this.setState({flashMessage: null});
+  }
 
   Login = (email , password) => {
    const cookies = new Cookies();
@@ -68,8 +88,15 @@ export class App extends Component {
      email: email,
      password: password
    }).then(res => {
-    cookies.set('access_token', res.data.access_token, { path: '/' }); localStorage.setItem('refresh_token', res.data.refresh_token);
+    cookies.set('access_token', res.data.access_token, { path: '/' });
+    localStorage.setItem('refresh_token', res.data.refresh_token);
     this.setState({user: res.data.user});
+    this.setState({
+      flashMessage: {
+        type: "success",
+        body : "Welcome " + res.data.user.first_name + "!"
+      }
+    });
    }).catch(
     function (error) {
       console.log('Show error notification!')
@@ -80,10 +107,16 @@ export class App extends Component {
 
   }
 
-  componentDidMount(){
+
+  getPosts = () => {
     Axios.get("http://localhost:3000/api/v1/posts")
     .then(res => this.setState({posts: res.data}));
-    this.getUser();
+  }
+  componentDidMount(){
+    this.getPosts();
+    //setInterval(this.getPosts, 5000);
+    setInterval(this.getUser, 2000);
+
 
   }
 
@@ -91,17 +124,33 @@ export class App extends Component {
   getUser = () => {
     const cookies = new Cookies();
     let token =cookies.get('access_token');
-    if (token !== undefined) {
-
-    
+    if (token !== undefined) {   
     Axios.get("http://localhost:3000/api/v1/current_user",{
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => {
+      console.log(res.data);
       this.setState({user: res.data});
-      //console.log(this.state.user , "user Get User");
-    });
+    }).catch(error => {
+      if (error.response.status === 401) {
+        cookies.remove("access_token");
+        localStorage.removeItem("refresh_token");
+        this.setState({user: null});
+        
+        this.setState({
+          flashMessage: {
+            type: "danger",
+            body : error.response.data.message
+          }
+        });
+        console.log(error.response.data.message)
+
+        
+      }
+  });
   } 
   }
+
+
 
   AddNewPost = (postObject) => {
     const cookies = new Cookies();
@@ -129,15 +178,23 @@ export class App extends Component {
       return <AddPost AddNewPost= {this.AddNewPost} />
     }
   }
+  handleMessage = () => {
+    if (this.state.flashMessage !== null && this.state.flashMessage !== "" ) {
+      return <Flash flashMessage={this.state.flashMessage} hideFlashMessage={this.hideFlashMessage}/>
+    }
+    
+  }
 
   render() {
     return (
       
       <Router>
         
-          <NavBar logOut={this.logOut} user={this.state.user} />  
+          <NavBar logOut={this.logOut} user={this.state.user}  />  
             <Route exact path="/" render={props => (
               <React.Fragment>
+                {this.handleMessage()}
+                <br/>
                 {this.formatAddNewPost()}
                 
                 <br/>
