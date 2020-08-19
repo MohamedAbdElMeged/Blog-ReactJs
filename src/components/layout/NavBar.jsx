@@ -41,6 +41,7 @@ export class NavBar extends Component {
                 <nav className="navbar navbar-light bg-light navbar-expand-lg ">
 
                 <Link className="nav-link" to="/"><img src={Logo} alt="Logo" height="30" width="30" className="navbar-brand"/></Link>
+                <Link className="nav-link" to="/">Home</Link>
                 <Link className="nav-link" to="/about">About</Link>
 
                                 {this.checkLogged()}

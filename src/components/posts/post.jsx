@@ -56,7 +56,6 @@ export class post extends Component {
 
     render() {
         const {title ,body , user} = this.props.post ;
-        //console.log(this.props.user , "vdds");
         return (                 
             <React.Fragment>
                 <div className="card">

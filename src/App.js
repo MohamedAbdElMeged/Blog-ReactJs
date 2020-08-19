@@ -23,7 +23,6 @@ export class App extends Component {
   };
   registerNewUser = (user) => {
     const cookies = new Cookies();
-    console.log(user);
     let formData = new FormData();
     formData.append('photo',user.photo);
     formData.append('first_name',user.first_name);
@@ -115,7 +114,7 @@ export class App extends Component {
   componentDidMount(){
     this.getPosts();
     setInterval(this.getPosts, 5000);
-    setInterval(this.getUser, 2000);
+    setInterval(this.getUser, 10000);
 
 
   }
@@ -128,7 +127,6 @@ export class App extends Component {
     Axios.get("http://localhost:3000/api/v1/current_user",{
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => {
-      console.log(res.data);
       this.setState({user: res.data});
     }).catch(error => {
       if (error.response.status === 401) {
@@ -168,9 +166,15 @@ export class App extends Component {
   };
 
   deletePost = (id) => {
-    Axios.delete(`http://localhost:3000/api/v1/posts/${id}`,{
+    const cookies = new Cookies();
+    console.log(cookies.get('access_token'));
+    Axios.delete(`http://localhost:3000/api/v1/posts/${id}`,
+    {
+      headers: { Authorization: `Bearer ${cookies.get('access_token')}` }
+    },{
       method: 'DELETE'
-    }).then(res => { this.setState({posts: [...this.state.posts.filter(post => post.id !== id)]} ) })
+    }
+    ).then(res => { this.setState({posts: [...this.state.posts.filter(post => post.id !== id)]} ) })
   }
 
   formatAddNewPost = () => {
@@ -203,7 +207,7 @@ export class App extends Component {
             )}/>
             <Route path="/login" component={() => <Login Login={this.Login} user={this.state.user}  />}/>
             <Route path="/register" component={() => <Register registerNewUser={this.registerNewUser} user={this.state.user}/>}/>
-            <Route path="/profile" component={() => <Profile  user={this.state.user}/>}/>
+            <Route path="/profile" component={() => <Profile  user={this.state.user}  posts={this.state.posts}/> }/>
 
             <Route path="/about" component={About}/>
 
@@ -214,30 +218,3 @@ export class App extends Component {
 }
 
 export default App
-
-
-
-  // constructor(){
-  //   super();   
-  //   // localStorage.setItem('myData', "data");
-    
-  //   const cookies = new Cookies();
-  //   Axios.post("http://localhost:3000/api/v1/sessions",{
-  //     "email":"mo@mo.com",
-  //     "password": "12345678"
-  
-  // })
-  // .then(res => {cookies.set('access_token', res.data.access_token, { path: '/' }); localStorage.setItem('refresh_token', res.data.refresh_token);});
-  // }
-
-
-  // checkAuth = () =>{
-  //   const cookies = new Cookies();
-  //   let token =cookies.get('access_token');
-  //   if (token !== undefined) {
-  //     let user = this.getUser();
-  //     if (user !== undefined) {
-  //       this.setState({user: user});
-  //     }
-  //   } 
-  // }
