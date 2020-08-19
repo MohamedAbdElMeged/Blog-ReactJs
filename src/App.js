@@ -114,7 +114,7 @@ export class App extends Component {
   }
   componentDidMount(){
     this.getPosts();
-    //setInterval(this.getPosts, 5000);
+    setInterval(this.getPosts, 5000);
     setInterval(this.getUser, 2000);
 
 

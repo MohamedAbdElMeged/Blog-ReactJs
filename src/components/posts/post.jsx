@@ -8,14 +8,14 @@ import AddComment from './../comments/AddComment';
 
 export class post extends Component {
 
-    state ={
-        comments: []
-    }
+    // state ={
+    //     comments: []
+    // }
 
-    getComments = () => {
-        Axios.get(`http://localhost:3000/api/v1/posts/${this.props.post.id}/comments`)
-        .then(res => this.setState({comments: res.data }));
-    }
+    // getComments = () => {
+    //     Axios.get(`http://localhost:3000/api/v1/posts/${this.props.post.id}/comments`)
+    //     .then(res => this.setState({comments: res.data }));
+    // }
 
     componentDidMount(){
         //setInterval(this.getComments, 5000);
@@ -74,7 +74,7 @@ export class post extends Component {
                          </small>
                     </div>                   
                 </div>    
-                <Comments comments={this.state.comments}   />  
+                <Comments comments={this.props.post.comments}   />  
                 {this.checkUserFromComment()}
                 <br/>
                 

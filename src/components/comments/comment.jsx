@@ -8,24 +8,29 @@ export class comment extends Component {
         return date + " " + time ;
     };
 
+    checkComment = () => {
+        if (this.props.comment !== null) {
+            const {body, user } = this.props.comment;
+            return                 <div className="card container">
+            <p className="card-header">{user.first_name + " " + user.last_name + "     "}
+            <small>commented</small>
+            </p>                 
+            <div className="card-body">
+                <p className="card-text">{body}</p>
+            </div>
+            <div className="card-footer">
+                <small className="text-muted">
+                {this.formateDate()}
+                </small>
+            </div>                   
+        </div>  
+        }
+    }
 
     render() {
-        const {body, user } = this.props.comment;
         return (
             <div>
-                    <div className="card container">
-                    <p className="card-header">{user.first_name + " " + user.last_name + "     "}
-                    <small>commented</small>
-                    </p>                 
-                    <div className="card-body">
-                        <p className="card-text">{body}</p>
-                    </div>
-                    <div className="card-footer">
-                         <small className="text-muted">
-                         {this.formateDate()}
-                         </small>
-                    </div>                   
-                </div>   
+                {this.checkComment()}
             </div>
         )
     }
