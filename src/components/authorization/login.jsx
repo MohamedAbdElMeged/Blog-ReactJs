@@ -19,6 +19,7 @@ export class login extends Component {
         
     }
 
+
     checkRedirect = () => {
         if (this.props.user === null){
             return             <div className="container login-container" >

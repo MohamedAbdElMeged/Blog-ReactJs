@@ -8,18 +8,18 @@ import AddComment from './../comments/AddComment';
 
 export class post extends Component {
 
-    // state ={
-    //     comments: []
-    // }
+    state ={
+        comments: this.props.post.comments
+    }
 
     // getComments = () => {
     //     Axios.get(`http://localhost:3000/api/v1/posts/${this.props.post.id}/comments`)
     //     .then(res => this.setState({comments: res.data }));
     // }
 
-    componentDidMount(){
-        //setInterval(this.getComments, 5000);
-    }
+    // componentDidMount(){
+    //     //setInterval(this.getComments, 5000);
+    // }
 
     formateDate = () => {
         let date = new Date(this.props.post.created_at).toLocaleDateString();

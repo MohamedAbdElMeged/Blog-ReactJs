@@ -4,8 +4,6 @@ import {Link} from 'react-router-dom';
 //import Cookies from 'universal-cookie';
 export class NavBar extends Component {
 
-
-
     checkLogged = () => {
         
         if (this.props.user !== null) {

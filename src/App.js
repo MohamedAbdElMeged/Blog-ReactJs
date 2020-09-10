@@ -65,6 +65,8 @@ export class App extends Component {
       this.setState({user: null});
       cookies.remove("access_token");
       localStorage.removeItem("refresh_token");
+      clearInterval(this.PoststimerID);
+      clearInterval(this.UsertimerID);
       this.setState({
         flashMessage: {
           type: "success",
@@ -90,12 +92,15 @@ export class App extends Component {
     cookies.set('access_token', res.data.access_token, { path: '/' });
     localStorage.setItem('refresh_token', res.data.refresh_token);
     this.setState({user: res.data.user});
+    this.PoststimerID = setInterval(this.getPosts, 5000);
+    this.UsertimerID = setInterval(this.getUser, 30000);
     this.setState({
       flashMessage: {
         type: "success",
         body : "Welcome " + res.data.user.first_name + "!"
       }
     });
+
    }).catch(
     function (error) {
       console.log('Show error notification!')
@@ -108,44 +113,42 @@ export class App extends Component {
 
 
   getPosts = () => {
-    Axios.get("http://localhost:3000/api/v1/posts")
-    .then(res => this.setState({posts: res.data}));
+      Axios.get("http://localhost:3000/api/v1/posts")
+      .then(res => this.setState({posts: res.data}));
   }
-  componentDidMount(){
-    this.getPosts();
-    setInterval(this.getPosts, 5000);
-    setInterval(this.getUser, 10000);
-
-
+  componentDidMount(){   
+      this.getPosts();
   }
 
 
   getUser = () => {
-    const cookies = new Cookies();
-    let token =cookies.get('access_token');
-    if (token !== undefined) {   
-    Axios.get("http://localhost:3000/api/v1/current_user",{
-      headers: { Authorization: `Bearer ${token}` }
-    }).then(res => {
-      this.setState({user: res.data});
-    }).catch(error => {
-      if (error.response.status === 401) {
-        cookies.remove("access_token");
-        localStorage.removeItem("refresh_token");
-        this.setState({user: null});
-        
-        this.setState({
-          flashMessage: {
-            type: "danger",
-            body : error.response.data.message
-          }
-        });
-        console.log(error.response.data.message)
+        const cookies = new Cookies();
+        let token =cookies.get('access_token');
+        if (token !== undefined) {   
+        Axios.get("http://localhost:3000/api/v1/current_user",{
+          headers: { Authorization: `Bearer ${token}` }
+        }).then(res => {
+          this.setState({user: res.data});
+        }).catch(error => {
+          if (error.response.status === 401) {
+            cookies.remove("access_token");
+            localStorage.removeItem("refresh_token");
+            this.setState({user: null});
+            clearInterval(this.PoststimerID);
+            clearInterval(this.UsertimerID);
+            this.setState({
+              flashMessage: {
+                type: "danger",
+                body : error.response.data.message
+              }
+            });
+            console.log(error.response.data.message)
 
-        
-      }
-  });
-  } 
+            
+          }
+      });
+      } 
+    
   }
 
 
@@ -205,7 +208,7 @@ export class App extends Component {
                 <Posts posts={this.state.posts} deletePost={this.deletePost} user={this.state.user}/>
             </React.Fragment>
             )}/>
-            <Route path="/login" component={() => <Login Login={this.Login} user={this.state.user}  />}/>
+            <Route path="/login" component={() => <Login Login={this.Login} user={this.state.user}/>}/>
             <Route path="/register" component={() => <Register registerNewUser={this.registerNewUser} user={this.state.user}/>}/>
             <Route path="/profile" component={() => <Profile  user={this.state.user}  posts={this.state.posts}/> }/>
 
